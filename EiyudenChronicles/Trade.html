@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Eiyuden Chronicle: Hundred Heroes - Trading Helper</title>
+</head>
+<body>
+<header>
+    <h1>Eiyuden Chronicle: Hundred Heroes - Trading Helper</h1>
+    <p>Use this tool to help you find the best towns to buy and sell items in Eiyuden Chronicle: Hundred Heroes</p>
+    <p>Select what towns you currently have access to and it should spit out what you should buy/sell in each town.</p>
+    <p>The buffer percent is there to manage "risk".  At 20% you should not lose any money if you buy at the worst possible roll and sell at the worst possible roll.</p>
+    <p>You will still on average make <em>some</em> money if you lower it to 0.</p>
+</header>
+<form>
+    <fieldset id="towns">
+    </fieldset>
+    <fieldset>
+        <label>Price Buffer Percent <input name="priceBuffer" type="number" value="20" min="0" max="100" step="1"/></label>
+        * This will buffer both the buy and sell prices by the percentage entered
+    </fieldset>
+</form>
+<div id="output"></div>
+<footer></footer>
+<script>
+        const towns = ["Castle",
+            "Werne Village",
+            "Treefolk Village",
+            "Hishahn",
+            "Twinhorne East",
+            "Imperish'arc",
+            "Ardinale City",
+            "Athrabalt",
+            "Twinhorne West"];
+
+        const tradeItems = [
+            {
+                "ItemName": "Rock Salt",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 60,
+                        "Sell": 50,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 35,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 33,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": 42,
+                        "Sell": 34,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": null,
+                        "Sell": 35,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": 152,
+                        "Sell": 124,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": null,
+                        "Sell": 50,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 50,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 25,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Corn",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 160,
+                        "Sell": 133,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 94,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": 100,
+                        "Sell": 82,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 94,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": null,
+                        "Sell": 93,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 200,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": null,
+                        "Sell": 201,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 201,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 100,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Black Pepper",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 150,
+                        "Sell": 124,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": 106,
+                        "Sell": 88,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": 75,
+                        "Sell": 63,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": 105,
+                        "Sell": 88,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": null,
+                        "Sell": 88,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": 225,
+                        "Sell": 187,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": null,
+                        "Sell": 250,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": 300,
+                        "Sell": 250,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": 152,
+                        "Sell": 126,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Wine",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 241,
+                        "Sell": 200,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 140,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": 151,
+                        "Sell": 125,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 140,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": null,
+                        "Sell": 141,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 303,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": 362,
+                        "Sell": 303,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 360,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 150,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Hot Spring Black Egg",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 300,
+                        "Sell": 250,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": 168,
+                        "Sell": 140,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": 480,
+                        "Sell": 400,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": 210,
+                        "Sell": 174,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": 212,
+                        "Sell": 175,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": 450,
+                        "Sell": 374,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": 424,
+                        "Sell": 353,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": 480,
+                        "Sell": 400,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": 300,
+                        "Sell": 250,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Chen Rock Tea",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 402,
+                        "Sell": 335,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": 280,
+                        "Sell": 233,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 167,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": 840,
+                        "Sell": 700,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": null,
+                        "Sell": 233,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 500,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": null,
+                        "Sell": 666,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 666,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 333,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Tanned Leather",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 302,
+                        "Sell": 252,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": 150,
+                        "Sell": 125,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": 302,
+                        "Sell": 250,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 378,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": null,
+                        "Sell": 375,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 500,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": null,
+                        "Sell": 175,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 252,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": 300,
+                        "Sell": 250,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Leather Clothes",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 480,
+                        "Sell": 400,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 1000,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 300,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 600,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": null,
+                        "Sell": 605,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 300,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": 424,
+                        "Sell": 353,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": 600,
+                        "Sell": 500,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": 600,
+                        "Sell": 500,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Silk",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 700,
+                        "Sell": 583,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": 350,
+                        "Sell": 295,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": 560,
+                        "Sell": 467,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 706,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": null,
+                        "Sell": 875,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 708,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": null,
+                        "Sell": 326,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 466,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 471,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Foreign Clothes",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": null,
+                        "Sell": 533,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 267,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 400,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": 960,
+                        "Sell": 800,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": 960,
+                        "Sell": 800,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 400,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": null,
+                        "Sell": 2355,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 666,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 666,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Kimono *",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": null,
+                        "Sell": 833,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 417,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 833,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 1250,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": null,
+                        "Sell": 1262,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": 2000,
+                        "Sell": 1666,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": null,
+                        "Sell": 4667,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 833,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 841,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Tar Stone",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 605,
+                        "Sell": 504,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": 600,
+                        "Sell": 503,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 80,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 504,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": null,
+                        "Sell": 250,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": 254,
+                        "Sell": 209,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": null,
+                        "Sell": 720,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 800,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 800,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Metal Ore",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 400,
+                        "Sell": 333,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 333,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 536,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 333,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": null,
+                        "Sell": 168,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 139,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": null,
+                        "Sell": 537,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 266,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 533,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Crystal Ore",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 500,
+                        "Sell": 416,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 420,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 670,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": 505,
+                        "Sell": 417,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": 252,
+                        "Sell": 208,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 175,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": null,
+                        "Sell": 666,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 333,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 674,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Pink Coral",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 907,
+                        "Sell": 756,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 757,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 1212,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": 450,
+                        "Sell": 378,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": 900,
+                        "Sell": 750,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 315,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": null,
+                        "Sell": 900,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 1212,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 900,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Pearl",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 1800,
+                        "Sell": 1500,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 1800,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 1920,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": 909,
+                        "Sell": 750,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": 1800,
+                        "Sell": 1500,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 636,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": null,
+                        "Sell": 1818,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 2400,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 1800,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Diamond",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 2270,
+                        "Sell": 1893,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": 2500,
+                        "Sell": 2082,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 3332,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 1042,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": null,
+                        "Sell": 2083,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 874,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": null,
+                        "Sell": 5000,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 3333,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 2500,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Rug",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 800,
+                        "Sell": 666,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": 800,
+                        "Sell": 666,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 466,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 466,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": 560,
+                        "Sell": 466,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 1347,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": 800,
+                        "Sell": 666,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": 1200,
+                        "Sell": 999,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 1010,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Perfume",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 200,
+                        "Sell": 166,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 167,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": 140,
+                        "Sell": 117,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 117,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": 453,
+                        "Sell": 373,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 335,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": 200,
+                        "Sell": 167,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": 300,
+                        "Sell": 250,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 252,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Glassware",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 240,
+                        "Sell": 200,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 200,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 189,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 140,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": null,
+                        "Sell": 139,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": 480,
+                        "Sell": 400,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": 180,
+                        "Sell": 150,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": null,
+                        "Sell": 150,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": null,
+                        "Sell": 150,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Painting",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 1212,
+                        "Sell": 1010,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 2000,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 800,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 2000,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": 2700,
+                        "Sell": 2250,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 800,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": 720,
+                        "Sell": 600,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": 1200,
+                        "Sell": 999,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": 848,
+                        "Sell": 705,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Carving",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": 1500,
+                        "Sell": 1250,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 1750,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 999,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 2000,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": 2270,
+                        "Sell": 1875,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 2500,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": 750,
+                        "Sell": 625,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": 1515,
+                        "Sell": 1263,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": 675,
+                        "Sell": 562,
+                    },
+                ]
+            },
+            {
+                "ItemName": "Wall Scroll *",
+                "Locations": [
+                    {
+                        "LocationName": "Castle",
+                        "Buy": null,
+                        "Sell": 1666,
+                    },
+                    {
+                        "LocationName": "Werne Village",
+                        "Buy": null,
+                        "Sell": 2332,
+                    },
+                    {
+                        "LocationName": "Treefolk Village",
+                        "Buy": null,
+                        "Sell": 1345,
+                    },
+                    {
+                        "LocationName": "Hishahn",
+                        "Buy": null,
+                        "Sell": 3333,
+                    },
+                    {
+                        "LocationName": "Twinhorne East",
+                        "Buy": 3000,
+                        "Sell": 2500,
+                    },
+                    {
+                        "LocationName": "Imperish'arc",
+                        "Buy": null,
+                        "Sell": 1333,
+                    },
+                    {
+                        "LocationName": "Ardinale City",
+                        "Buy": 1000,
+                        "Sell": 833,
+                    },
+                    {
+                        "LocationName": "Athrabalt",
+                        "Buy": 2000,
+                        "Sell": 1666,
+                    },
+                    {
+                        "LocationName": "Twinhorne West",
+                        "Buy": 1600,
+                        "Sell": 1333,
+                    },
+                ]
+            }
+        ];
+
+        //create a html checkbox list for each items in towns and add it to the towns fieldset
+        towns.forEach(town => {
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.id = town;
+            checkbox.name = "towns";
+            checkbox.value = town;
+
+            const label = document.createElement("label");
+            label.htmlFor = town;
+            label.appendChild(document.createTextNode(town));
+
+            document.getElementById("towns").appendChild(checkbox);
+            document.getElementById("towns").appendChild(label);
+            document.getElementById("towns").appendChild(document.createElement("br"));
+        });
+
+        //create an event listener if anything changes in the form
+        document.querySelector("form").addEventListener("change", function (e) {
+
+            //get priceBufferPercent
+            const priceBufferPercent = document.querySelector("input[name=priceBuffer]").value / 100;
+
+            //get the checked towns
+            const checkedTowns = Array.from(document.querySelectorAll('input[name="towns"]:checked')).map(town => town.value);
+
+            //if there are no checkedTowns clear out output and return
+            if (checkedTowns.length === 0) {
+                document.getElementById("output").innerHTML = "";
+                return;
+            }
+
+            //find the best sell price for each item in the checked towns
+            const bestPrices = tradeItems.map(item => {
+                const bestPrice = item.Locations
+                    .filter(location => checkedTowns.includes(location.LocationName))
+                    .reduce((acc, location) => {
+                        if (acc === null) {
+                            acc = location;
+                        } else {
+                            if (location.Sell > acc.Sell) {
+                                acc = location;
+                            }
+                        }
+                        return acc;
+                    }, null);
+
+
+
+                return {
+                    "ItemName": item.ItemName,
+                    "LocationName": bestPrice.LocationName,
+                    "Sell": bestPrice.Sell,
+                    "SellPriceWithBuffer": bestPrice.Sell * (1 - priceBufferPercent)
+                };
+            }).map(item => {
+                //find locations where the buy price plus buffer is less than the sell price and add the locations to the item
+                item.BuyLocations = tradeItems
+                    .find(tradeItem => tradeItem.ItemName === item.ItemName).Locations
+                    .filter(location => checkedTowns.includes(location.LocationName))
+                    .filter(location => location.Buy !== null)
+                    .filter(location => location.Buy * (1 + priceBufferPercent) < item.Sell);
+
+                return item;
+            }).filter(item => item.BuyLocations.length > 0);
+
+            //for each town what items should we buy and sell and dispaly in id output
+            document.getElementById("output").innerHTML = checkedTowns.map(town => {
+
+                //filter best prices for the current town
+                var itemsToSellHere = bestPrices.filter(item => item.LocationName === town);
+
+                const townItems = bestPrices.filter(item => item.BuyLocations.some(location => location.LocationName === town));
+                //if (townItems.length === 0) return "";
+
+                return `<h2>${town}</h2><h3>Buy</h3><ul>${townItems.map(item => `<li>${item.ItemName}</li>`).join("")}</ul>` +
+                    `<h3>Sell</h3><ul>${itemsToSellHere.map(item => `<li>${item.ItemName}</li>`).join("")}</ul>`
+                    ;
+            }).join("");
+
+        });
+
+    </script>
+
+
+
+</body>
+</html>
